@@ -139,7 +139,7 @@ class MNISTDiffusion(nn.Module):
         
         if t != 1000 and t != 0:
             def score_fn(x):
-                noise_pred = self.model(x_t, t)
+                noise_pred = self.model(x, t)
                 return noise_pred
             
             flipd_trace_term = compute_trace_of_jacobian(
@@ -155,9 +155,13 @@ class MNISTDiffusion(nn.Module):
                 score_fn(x_t), p=2
             )
 
-            # flipd = self.in_channels * self.image_size**2 + std**2 * (flipd_trace_term + flipd_score_norm_term**2)
+            flipd = self.in_channels * self.image_size**2 + (1 - alpha_t_cumprod) * ( flipd_trace_term + flipd_score_norm_term**2)
 
-            flipd = -torch.sqrt(1-alpha_t_cumprod) * flipd_trace_term + flipd_score_norm_term
+            # flipd = -torch.sqrt(1-alpha_t_cumprod) * flipd_trace_term + flipd_score_norm_term
+
+            # if t % 100 == 0:
+            #     import pdb
+            #     pdb.set_trace()
 
             return mean+std*noise, flipd.item()
         else:
