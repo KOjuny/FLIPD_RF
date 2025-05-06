@@ -157,6 +157,8 @@ class MNISTDiffusion(nn.Module):
 
             flipd = self.in_channels * self.image_size**2 + std**2 * (flipd_trace_term + flipd_score_norm_term**2)
 
+            # flipd = -troch.sqrt(1-alpha_t_cumprod) * flipd_trace_term + flipd_score_norm_term
+
             return mean+std*noise, flipd.item()
         else:
             return mean+std*noise, 0
