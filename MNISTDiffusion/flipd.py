@@ -52,11 +52,11 @@ samples, flipd = model_ema.module.sampling(
     device=device
 )
 
-# # 결과 저장
-# os.makedirs("inference_results", exist_ok=True)
-# save_image(samples, "inference_results/generated_samples.png", nrow=int(math.sqrt(n_samples)))
+# 결과 저장
+os.makedirs("results/images", exist_ok=True)
+save_image(samples, "results/images/generated_samples.png", nrow=int(math.sqrt(n_samples)))
 
-# print(f"✅ 샘플 이미지를 'inference_results/generated_samples.png'로 저장 완료했습니다!")
+print(f"✅ 샘플 이미지를 'results/images/generated_samples.png'로 저장 완료했습니다!")
 
 
 # 저장할 폴더 경로
