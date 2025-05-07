@@ -86,7 +86,31 @@ class MNISTDiffusion(nn.Module):
         else:
             std=0.0
 
-        return mean+std*noise
+        if t != 1000 and t != 0:
+            def score_fn(x):
+                noise_pred = self.model(x, t)
+                return noise_pred
+
+            flipd_trace_term = compute_trace_of_jacobian(
+                score_fn,
+                x=x_t,
+                method="hutchinson_gaussian",
+                hutchinson_sample_count=1,
+                chunk_size=1,
+                seed=42,
+                verbose=False,
+            )
+            flipd_score_norm_term = torch.norm(
+                score_fn(x_t), p=2
+            )
+
+            D = self.in_channels * self.image_size ** 2
+            
+            flipd = D - torch.sqrt(1-alpha_t_cumprod) * flipd_trace_term + flipd_score_norm_term ** 2
+
+            return mean+std*noise, flipd.item()
+        else:
+            return mean+std*noise, 0
 
 
     @torch.no_grad()
@@ -118,7 +142,7 @@ class MNISTDiffusion(nn.Module):
             def score_fn(x):
                 noise_pred = self.model(x, t)
                 return noise_pred
-            
+
             flipd_trace_term = compute_trace_of_jacobian(
                 score_fn,
                 x=x_t,
@@ -136,9 +160,8 @@ class MNISTDiffusion(nn.Module):
             
             flipd = D - torch.sqrt(1-alpha_t_cumprod) * flipd_trace_term + flipd_score_norm_term ** 2
 
-            # if t % 100 == 0:
-            #     import pdb
-            #     pdb.set_trace()
+            # import pdb
+            # pdb.set_trace()
 
             return mean+std*noise, flipd.item()
         else:
