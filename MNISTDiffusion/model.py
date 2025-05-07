@@ -140,7 +140,7 @@ class MNISTDiffusion(nn.Module):
         
         if t != 1000 and t != 0:
             def score_fn(x):
-                noise_pred = self.model(x, t)
+                noise_pred = self.model(torch.sqrt(alpha_t_cumprod) * x, t)
                 return noise_pred
 
             flipd_trace_term = compute_trace_of_jacobian(
