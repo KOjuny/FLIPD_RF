@@ -44,29 +44,6 @@ class MNISTDiffusion(nn.Module):
             if clipped_reverse_diffusion:
                 x_t, flipd=self._reverse_diffusion_with_clip(x_t,t,noise)
                 flipd_lst.append(flipd)
-                # if t != 1000 and t != 0:
-                #     def score_fn(x):
-                #         noise_pred = self.model(x_t, t)
-                #         return noise_pred
-                    
-                #     flipd_trace_term = compute_trace_of_jacobian(
-                #         score_fn,
-                #         x=x_t,
-                #         method="hutchinson_gaussian",
-                #         hutchinson_sample_count=1,
-                #         chunk_size=1,
-                #         seed=42,
-                #         verbose=False,
-                #     )
-                #     flipd_score_norm_term = torch.norm(
-                #         score_fn(x_t), p=2
-                #     )
-                #     import pdb
-                #     pdb.set_trace()
-
-                #     flipd = self.in_channels * self.image_size**2 + std**2 * (flipd_trace_term + flipd_score_norm_term**2)
-                    
-                #     flipd_lst.append(flipd.item())
             else:
                 x_t=self._reverse_diffusion(x_t,t,noise)
 
@@ -155,9 +132,9 @@ class MNISTDiffusion(nn.Module):
                 score_fn(x_t), p=2
             )
 
-            flipd = self.in_channels * self.image_size**2 + (1 - alpha_t_cumprod) * ( flipd_trace_term + flipd_score_norm_term**2)
-
-            # flipd = -torch.sqrt(1-alpha_t_cumprod) * flipd_trace_term + flipd_score_norm_term
+            D = self.in_channels * self.image_size ** 2
+            
+            flipd = D - torch.sqrt(1-alpha_t_cumprod) * flipd_trace_term + flipd_score_norm_term ** 2
 
             # if t % 100 == 0:
             #     import pdb
