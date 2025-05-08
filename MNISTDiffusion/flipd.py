@@ -45,35 +45,48 @@ model_ema = load_model(
 
 model_ema.eval()
 
-# 저장용 루프
-for i in range(20):  # num_iterations 만큼 반복
+for i in range(num_iterations):
+    # 샘플 생성
     samples, flipd = model_ema.module.sampling(
         n_samples=n_samples,
-        clipped_reverse_diffusion= no_clip,
+        clipped_reverse_diffusion=not no_clip,
         device=device
     )
-    flipd = flipd[:-1]
+    flipd = flipd[:-1]  # 마지막 timestep 제외
 
-    # 파일 이름용 index 문자열 만들기 (예: 001, 002, ...)
+    # 파일 인덱스 문자열 생성 (예: 001)
     index_str = str(i + 1).zfill(3)
 
-    # 이미지 저장
+    # 🔹 이미지 저장
     image_path = f"results/images/generated_samples_{index_str}.png"
     os.makedirs(os.path.dirname(image_path), exist_ok=True)
     save_image(samples, image_path, nrow=int(math.sqrt(n_samples)))
     print(f"✅ 샘플 이미지를 '{image_path}'로 저장 완료했습니다!")
 
-    # 그래프 저장
+    # 🔹 FLIPD 그래프 저장
     fig_path = f"results/figures/flipd_plot_{index_str}.png"
     os.makedirs(os.path.dirname(fig_path), exist_ok=True)
+
     plt.figure()
-    plt.plot(flipd)
+    plt.plot(flipd, label="FLIPD")
+
+    # 🔸 최소값 계산 및 표시
+    min_idx = int(np.argmin(flipd))
+    min_val = flipd[min_idx]
+    plt.scatter(min_idx, min_val, color='red', zorder=5)
+    plt.annotate(f"min={min_val:.4f}", xy=(min_idx, min_val),
+                 xytext=(min_idx + 2, min_val),
+                 arrowprops=dict(facecolor='red', shrink=0.05),
+                 fontsize=9, color='red')
+
+    # 그래프 설정
     plt.title("Line Plot of FLIPD")
     plt.xlabel("Timestep")
     plt.ylabel("FLIPD Value")
     plt.grid(True)
+    plt.legend()
     plt.savefig(fig_path)
-    plt.close()  # 메모리 누수 방지
+    plt.close()
     print(f"✅ FLIPD 그래프를 '{fig_path}'로 저장 완료했습니다!")
 
 # # 샘플 생성
