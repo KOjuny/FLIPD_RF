@@ -159,7 +159,7 @@ class MNISTDiffusion(nn.Module):
 
             D = self.in_channels * self.image_size ** 2
             
-            flipd = D - torch.sqrt(1-alpha_t_cumprod) * flipd_trace_term + flipd_score_norm_term ** 2
+            flipd = D - torch.sqrt(1-alpha_t_cumprod) * flipd_trace_term + flipd_score_norm_term
 
             # import pdb
             # pdb.set_trace()
