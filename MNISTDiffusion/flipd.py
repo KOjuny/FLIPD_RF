@@ -48,9 +48,11 @@ model_ema.eval()
 # 샘플 생성
 samples, flipd = model_ema.module.sampling(
     n_samples=n_samples,
-    clipped_reverse_diffusion=not no_clip,
+    clipped_reverse_diffusion=no_clip,
     device=device
 )
+
+# import pdb; pdb.set_trace()
 
 # 결과 저장
 os.makedirs("results/images", exist_ok=True)
@@ -68,7 +70,7 @@ plt.plot(flipd)
 plt.title("Line Plot of List")
 plt.xlabel("Index")
 plt.ylabel("Value")
-plt.xlim(0, 1)
+plt.xlim()
 plt.grid(True)
 
 # 저장하기 (예: figures/flipd_plot.png)
