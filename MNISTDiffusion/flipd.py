@@ -45,7 +45,7 @@ model_ema = load_model(
 
 model_ema.eval()
 
-for i in range(num_iterations):
+for i in range(20):
     # 샘플 생성
     samples, flipd = model_ema.module.sampling(
         n_samples=n_samples,
