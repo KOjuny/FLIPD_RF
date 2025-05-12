@@ -53,8 +53,6 @@ for i in range(1):
         clipped_reverse_diffusion=not no_clip,
         device=device
     )
-    flipd = flipd[:-1]  # 마지막 timestep 제외
-    timestep = timestep[:-1]
 
     # 파일 인덱스 문자열 생성 (예: 001)
     index_str = str(i + 1).zfill(3)
@@ -72,14 +70,14 @@ for i in range(1):
     plt.figure()
     plt.plot(timestep, flipd, label="FLIPD")
 
-    # 🔸 최소값 계산 및 표시
-    min_idx = int(np.argmin(flipd))
-    min_val = flipd[min_idx]
-    plt.scatter(min_idx, min_val, color='red', zorder=5)
-    plt.annotate(f"min={min_val:.4f}", xy=(min_idx, min_val),
-                 xytext=(min_idx + 2, min_val),
-                 arrowprops=dict(facecolor='red', shrink=0.05),
-                 fontsize=9, color='red')
+    # # 🔸 최소값 계산 및 표시
+    # min_idx = int(np.argmin(flipd))
+    # min_val = flipd[min_idx]
+    # plt.scatter(min_idx, min_val, color='red', zorder=5)
+    # plt.annotate(f"min={min_val:.4f}", xy=(min_idx, min_val),
+    #              xytext=(min_idx + 2, min_val),
+    #              arrowprops=dict(facecolor='red', shrink=0.05),
+    #              fontsize=9, color='red')
 
     # 그래프 설정
     plt.title("Line Plot of FLIPD")
