@@ -50,7 +50,7 @@ for i in range(1):
     # 샘플 생성
     samples, flipd, timestep = model_ema.module.sampling(
         n_samples=n_samples,
-        clipped_reverse_diffusion=not no_clip,
+        clipped_reverse_diffusion=no_clip,
         device=device
     )
 

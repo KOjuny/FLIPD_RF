@@ -111,6 +111,8 @@ class MNISTDiffusion(nn.Module):
         
         flipd = D - torch.sqrt(1-alpha_t_cumprod) * flipd_trace_term + flipd_score_norm_term
 
+        import pdb; pdb.set_trace()
+
         return mean+std*noise, flipd.item(), t.item()/1000
 
 
@@ -139,8 +141,6 @@ class MNISTDiffusion(nn.Module):
         else:
             mean=(beta_t / (1. - alpha_t_cumprod))*x_0_pred #alpha_t_cumprod_prev=1 since 0!=1
             std=0.0
-
-        # import pdb; pdb.set_trace()
         
         def score_fn(x):
             noise_pred = self.model(x, t)
