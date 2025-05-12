@@ -46,14 +46,15 @@ model_ema = load_model(
 
 model_ema.eval()
 
-for i in range(20):
+for i in range(1):
     # 샘플 생성
-    samples, flipd = model_ema.module.sampling(
+    samples, flipd, timestep = model_ema.module.sampling(
         n_samples=n_samples,
         clipped_reverse_diffusion=not no_clip,
         device=device
     )
     flipd = flipd[:-1]  # 마지막 timestep 제외
+    timestep = timestep[:-1]
 
     # 파일 인덱스 문자열 생성 (예: 001)
     index_str = str(i + 1).zfill(3)
@@ -69,7 +70,7 @@ for i in range(20):
     os.makedirs(os.path.dirname(fig_path), exist_ok=True)
 
     plt.figure()
-    plt.plot(flipd, label="FLIPD")
+    plt.plot(timestep, flipd, label="FLIPD")
 
     # 🔸 최소값 계산 및 표시
     min_idx = int(np.argmin(flipd))
@@ -86,6 +87,7 @@ for i in range(20):
     plt.ylabel("FLIPD Value")
     plt.grid(True)
     plt.legend()
+    plt.xlim(0,1)
     plt.savefig(fig_path)
     plt.close()
     print(f"✅ FLIPD 그래프를 '{fig_path}'로 저장 완료했습니다!")

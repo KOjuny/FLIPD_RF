@@ -36,21 +36,24 @@ class MNISTDiffusion(nn.Module):
     @torch.no_grad()
     def sampling(self,n_samples,clipped_reverse_diffusion=True,device="cuda"):
         flipd_lst = []
+        time_lst = []
         x_t=torch.randn((n_samples,self.in_channels,self.image_size,self.image_size)).to(device) # torch.Size([1, 1, 28, 28]) -> cfg를 안써서 1*28*28
         for i in tqdm(range(self.timesteps-1,-1,-1),desc="Sampling"):
             noise=torch.randn_like(x_t).to(device)
             t=torch.tensor([i for _ in range(n_samples)]).to(device)
 
             if clipped_reverse_diffusion:
-                x_t, flipd=self._reverse_diffusion_with_clip(x_t,t,noise)
+                x_t, flipd, t_0=self._reverse_diffusion_with_clip(x_t,t,noise)
                 flipd_lst.append(flipd)
+                time_lst.append(t_0)
             else:
-                x_t, flipd=self._reverse_diffusion(x_t,t,noise)
+                x_t, flipd, t_0=self._reverse_diffusion(x_t,t,noise)
                 flipd_lst.append(flipd)
+                time_lst.append(t_0)
 
         x_t=(x_t+1.)/2. #[-1,1] to [0,1]
 
-        return x_t, flipd_lst
+        return x_t, flipd_lst, time_lst
     
     def _cosine_variance_schedule(self,timesteps,epsilon= 0.008):
         steps=torch.linspace(0,timesteps,steps=timesteps+1,dtype=torch.float32)
@@ -109,9 +112,9 @@ class MNISTDiffusion(nn.Module):
             
             flipd = D - torch.sqrt(1-alpha_t_cumprod) * flipd_trace_term + flipd_score_norm_term
 
-            return mean+std*noise, flipd.item()
+            return mean+std*noise, flipd.item(), t.item()/1000
         else:
-            return mean+std*noise, 0
+            return mean+std*noise, 0, t.item()/1000
 
 
     @torch.no_grad()
@@ -164,7 +167,7 @@ class MNISTDiffusion(nn.Module):
             # import pdb
             # pdb.set_trace()
 
-            return mean+std*noise, flipd.item()
+            return mean+std*noise, flipd.item(), t.item()/1000
         else:
-            return mean+std*noise, 0
+            return mean+std*noise, 0, t.item()/1000
     
