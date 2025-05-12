@@ -4,6 +4,7 @@ from model import MNISTDiffusion
 from utils import ExponentialMovingAverage
 import math
 import matplotlib.pyplot as plt
+import numpy as np
 import os
 
 
