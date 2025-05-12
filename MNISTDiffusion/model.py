@@ -90,31 +90,29 @@ class MNISTDiffusion(nn.Module):
         else:
             std=0.0
 
-        if t != 1000 and t != 0:
-            def score_fn(x):
-                noise_pred = self.model(torch.sqrt(alpha_t_cumprod) * x, t)
-                return noise_pred
+        def score_fn(x):
+            noise_pred = self.model(torch.sqrt(alpha_t_cumprod) * x, t)
+            return noise_pred
 
-            flipd_trace_term = compute_trace_of_jacobian(
-                score_fn,
-                x=x_t,
-                method="hutchinson_gaussian",
-                hutchinson_sample_count=1,
-                chunk_size=1,
-                seed=42,
-                verbose=False,
-            )
-            flipd_score_norm_term = torch.norm(
-                score_fn(x_t), p=2
-            )
+        flipd_trace_term = compute_trace_of_jacobian(
+            score_fn,
+            x=x_t,
+            method="hutchinson_gaussian",
+            hutchinson_sample_count=1,
+            chunk_size=1,
+            seed=42,
+            verbose=False,
+        )
+        flipd_score_norm_term = torch.norm(
+            score_fn(x_t), p=2
+        )
 
-            D = self.in_channels * self.image_size ** 2
-            
-            flipd = D - torch.sqrt(1-alpha_t_cumprod) * flipd_trace_term + flipd_score_norm_term
+        D = self.in_channels * self.image_size ** 2
+        
+        flipd = D - torch.sqrt(1-alpha_t_cumprod) * flipd_trace_term + flipd_score_norm_term ** 2
 
-            return mean+std*noise, flipd.item(), t.item()/1000
-        else:
-            return mean+std*noise, 0, t.item()/1000
+        return mean+std*noise, flipd.item(), t.item()/1000
+
 
 
     @torch.no_grad()
@@ -142,32 +140,26 @@ class MNISTDiffusion(nn.Module):
             mean=(beta_t / (1. - alpha_t_cumprod))*x_0_pred #alpha_t_cumprod_prev=1 since 0!=1
             std=0.0
         
-        if t != 1000 and t != 0:
-            def score_fn(x):
-                noise_pred = self.model(torch.sqrt(alpha_t_cumprod) * x, t)
-                return noise_pred
+        def score_fn(x):
+            noise_pred = self.model(torch.sqrt(alpha_t_cumprod) * x, t)
+            return noise_pred
 
-            flipd_trace_term = compute_trace_of_jacobian(
-                score_fn,
-                x=x_t,
-                method="hutchinson_gaussian",
-                hutchinson_sample_count=1,
-                chunk_size=1,
-                seed=42,
-                verbose=False,
-            )
-            flipd_score_norm_term = torch.norm(
-                score_fn(x_t), p=2
-            )
+        flipd_trace_term = compute_trace_of_jacobian(
+            score_fn,
+            x=x_t,
+            method="hutchinson_gaussian",
+            hutchinson_sample_count=1,
+            chunk_size=1,
+            seed=42,
+            verbose=False,
+        )
+        flipd_score_norm_term = torch.norm(
+            score_fn(x_t), p=2
+        )
 
-            D = self.in_channels * self.image_size ** 2
-            
-            flipd = D - torch.sqrt(1-alpha_t_cumprod) * flipd_trace_term + flipd_score_norm_term
+        D = self.in_channels * self.image_size ** 2
+        
+        flipd = D - torch.sqrt(1-alpha_t_cumprod) * flipd_trace_term + flipd_score_norm_term ** 2
 
-            # import pdb
-            # pdb.set_trace()
-
-            return mean+std*noise, flipd.item(), t.item()/1000
-        else:
-            return mean+std*noise, 0, t.item()/1000
+        return mean+std*noise, flipd.item(), t.item()/1000
     
