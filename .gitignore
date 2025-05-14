@@ -6,5 +6,7 @@ __pycache__
 figures
 images
 
+mnist_data
+fmnist_data
 datasets
 .gif
