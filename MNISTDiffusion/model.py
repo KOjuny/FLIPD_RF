@@ -111,8 +111,6 @@ class MNISTDiffusion(nn.Module):
         
         flipd = D - torch.sqrt(1-alpha_t_cumprod) * flipd_trace_term + flipd_score_norm_term
 
-        import pdb; pdb.set_trace()
-
         return mean+std*noise, flipd.item(), t.item()/1000
 
 
