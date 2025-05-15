@@ -8,7 +8,7 @@ import numpy as np
 import os
 
 
-ckpt_path = "results/steps_00046900.pt"   # ✅ 저장된 체크포인트 경로
+ckpt_path = "results/fmnist/steps_00046900.pt"   # ✅ 저장된 체크포인트 경로
 n_samples = 1                             # ✅ 생성할 샘플 개수
 model_base_dim = 64                       # ✅ 학습할 때 사용했던 base dim
 timesteps = 1000                          # ✅ 학습할 때 사용했던 diffusion steps
@@ -86,6 +86,7 @@ for i in range(1):
     plt.grid(True)
     plt.legend()
     plt.xlim(0,1)
+    plt.ylim(-100, 900)
     plt.savefig(fig_path)
     plt.close()
     print(f"✅ FLIPD 그래프를 '{fig_path}'로 저장 완료했습니다!")
