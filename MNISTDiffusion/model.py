@@ -41,7 +41,7 @@ class MNISTDiffusion(nn.Module):
         for i in tqdm(range(self.timesteps-1,-1,-1),desc="Sampling"):
             noise=torch.randn_like(x_t).to(device)
             t=torch.tensor([i for _ in range(n_samples)]).to(device)
-
+            
             if clipped_reverse_diffusion:
                 x_t, flipd, t_0=self._reverse_diffusion_with_clip(x_t,t,noise)
                 flipd_lst.append(flipd)
@@ -90,26 +90,32 @@ class MNISTDiffusion(nn.Module):
         else:
             std=0.0
 
+        # Tweedie's formula-based estimate of x_0
+        sqrt_alpha_bar = torch.sqrt(alpha_t_cumprod)
+        x0_hat = (x_t - sqrt_one_minus_alpha_cumprod_t * pred) / sqrt_alpha_bar
+
+        x_clean = torch.sqrt(alpha_t_cumprod) * x0_hat
+
         def score_fn(x):
             noise_pred = self.model(x, t)
             return noise_pred
 
         flipd_trace_term = compute_trace_of_jacobian(
             score_fn,
-            x=x_t,
+            x=x_clean,
             method="hutchinson_gaussian",
             hutchinson_sample_count=1,
             chunk_size=1,
             seed=42,
             verbose=False,
         )
-        flipd_score_norm_term = torch.norm(
-            score_fn(x_t), p=2
-        )
+        # flipd_score_norm_term = torch.norm(score_fn(x_t), p=2)
+        flipd_score_norm_term = torch.linalg.norm(score_fn(x_clean).reshape(score_fn(x_clean).shape[0], -1), ord=2, dim=1)
+
 
         D = self.in_channels * self.image_size ** 2
         
-        flipd = D - torch.sqrt(1-alpha_t_cumprod) * flipd_trace_term + flipd_score_norm_term
+        flipd = D - torch.sqrt(1-alpha_t_cumprod) * flipd_trace_term + flipd_score_norm_term ** 2
 
         return mean+std*noise, flipd.item(), t.item()/1000
 
