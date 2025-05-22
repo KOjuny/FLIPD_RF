@@ -39,7 +39,6 @@ else:
 def main(cfg: DictConfig, artifact_dir: Path):
 
     # Configure dataset
-    import pdb; pdb.set_trace()
     train_dataset = instantiate(cfg.dataset.train)
 
     split_size = cfg.dataset.val.get("split_size")
