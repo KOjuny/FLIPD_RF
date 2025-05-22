@@ -3,3 +3,14 @@ lightning
 mlflow
 python-dotenv
 gdown 
+datasets
+git+https://github.com/HamidrezaKmK/nflows.git 
+httpx
+dagshub
+diffusers
+transformers
+umap-learn
+seaborn
+opencv-python
+kneed
+einops
