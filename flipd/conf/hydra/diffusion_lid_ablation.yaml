@@ -1,0 +1,31 @@
+# Performs a sweep over a variety of datasets and LID estimators
+# (1) Stanczuk et al. (2) FlipdEstimator, and (3) FPRegressEstimator
+# These datasets aren't too high dimensional!
+
+run:
+  dir: ${out_dir}/hydra/${now:%Y-%m-%d}/${now:%H\:%M\:%S}
+sweep:
+  dir: ${out_dir}/hydra/${now:%Y-%m-%d}/${now:%H\:%M\:%S}-sweep
+mode: MULTIRUN
+
+sweeper:
+  params:
+    # pick a variety of datasets to perform a meaningful ablation
+    dataset: "manifolds/small/affine_10D_5d_laplace,manifolds/small/squiggly_1_freq_10D_2d_4d_8d_uniform,manifolds/small/squiggly_5_freq_10D_2d_4d_8d_uniform,manifolds/small/squiggly_05_freq_10D_2d_4d_8d_uniform,manifolds/small/squiggly_10_freq_10D_2d_4d_8d_uniform"
+
+    # monitor all the three different diffusion LID methods at the same time!    
+    +experiment: train_diffusion_tabular 
+    +callbacks@all_callbacks.lid1: flipd_curve
+    all_callbacks.lid1.frequency: 200
+    +callbacks@all_callbacks.lid2: normal_bundle_lid_curve 
+    all_callbacks.lid2.frequency: 200
+    +callbacks@all_callbacks.umap: umap 
+    all_callbacks.umap.frequency: 200
+    train.trainer.max_epochs: 400
+    lightning_dgm.optim_partial.lr: 1e-5
+
+    # uncomment for testing
+    # train.trainer.fast_dev_run: true 
+    
+    experiment_name: compare_everything_diffusion 
+    sample.num: 0 # cancel final sampling (Important!)

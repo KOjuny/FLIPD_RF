@@ -1,0 +1,11 @@
+_target_: data.datasets.EncodedTextImageDataset
+image_encoder: ${dgm.encoder}
+prompt_encoder: ${dgm.condition_encoder}
+raw_dataset:
+  _target_: data.datasets.Tuxemon
+  transform:
+    _target_: torchvision.transforms.Compose
+    transforms: ${_all_data_transforms}
+  timeout: 5
+encodings_path: outputs/tuxemon.pt
+device: ${device}

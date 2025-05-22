@@ -1,0 +1,7 @@
+_target_: mem.metrics.SSCDSimMetric
+arch: resnet50
+dist_threshold: 0.55   # threshold to extract memorized samples
+is_ascend: False
+index_type: inner_product
+batch_size: 50
+num_workers: 8

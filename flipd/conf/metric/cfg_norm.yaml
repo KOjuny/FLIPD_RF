@@ -1,0 +1,4 @@
+_target_: metrics.mem.detectors.ClassifierFreeGuidanceNorm
+sde: ${dgm.architecture}
+norm_time: 0.5
+steps: 10

@@ -1,0 +1,12 @@
+# @package _global_
+defaults:
+  - /callbacks@all_callbacks.nb_lid: normal_bundle_lid_curve
+  - _self_
+
+all_callbacks:
+  nb_lid: 
+    lid_preprocessing_args:
+      num_scores: null # set to 4 times ambient_dim
+      score_batch_size: 512
+      noise_time: 0.01
+      verbose: 1

@@ -1,0 +1,3 @@
+_target_: metrics.mem.detectors.DecodedPNGSize
+sde: ${dgm.architecture}
+decoder: ${dgm.decoder}

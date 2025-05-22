@@ -1,0 +1,43 @@
+# Performs a sweep over a variety of datasets and LID estimators
+# (1) Stanczuk et al. (2) FlipdEstimator
+# These are small synthetic data
+
+run:
+  dir: ${out_dir}/hydra/${now:%Y-%m-%d}/${now:%H\:%M\:%S}
+sweep:
+  dir: ${out_dir}/hydra/${now:%Y-%m-%d}/${now:%H\:%M\:%S}-sweep
+mode: MULTIRUN
+
+sweeper:
+  params:
+    # sweep over all the different small synthetic data types
+    dataset: "manifolds/small/affine_10D_2d_4d_8d_gaussian,manifolds/small/affine_10D_2d_4d_8d_laplace,manifolds/small/affine_10D_2d_4d_8d_uniform,manifolds/small/affine_10D_5d_gaussian,manifolds/small/affine_10D_5d_laplace,manifolds/small/affine_10D_5d_uniform,manifolds/small/RQNSF_10D_2d_4d_8d_uniform,manifolds/small/RQNSF_10D_5d_uniform,manifolds/small/squiggly_05_freq_10D_2d_4d_8d_uniform,manifolds/small/squiggly_10_freq_10D_2d_4d_8d_uniform,manifolds/small/squiggly_1_freq_10D_2d_4d_8d_uniform,manifolds/small/squiggly_5_freq_10D_2d_4d_8d_uniform"
+    
+    +experiment: train_diffusion_tabular 
+
+    # monitor fpk
+    +callbacks@all_callbacks.lid1: flipd_curve
+    all_callbacks.lid1.frequency: 200
+    all_callbacks.lid1.subsample_size: 4096
+    
+    # monitor normal bundles
+    +callbacks@all_callbacks.lid2: normal_bundle_lid_curve 
+    all_callbacks.lid2.frequency: 200
+    all_callbacks.lid2.subsample_size: 4096
+    all_callbacks.lid2.lid_preprocessing_args.score_batch_size: 4096
+    
+    # monitor sample quality
+    +callbacks@all_callbacks.umap: umap 
+    all_callbacks.umap.frequency: 200
+    train.trainer.max_epochs: 200
+
+    # set learning rate to smaller values for more accracy
+    lightning_dgm.optim_partial.lr: 1e-4
+
+    # Customize progress bar to avoid having a huge log in stderr of mlflow
+    +callbacks@all_callbacks.progress_bar: trainer_progress_bar
+    all_callbacks.progress_bar.refresh_rate: 1000
+
+    # train.trainer.fast_dev_run: true # uncomment for testing
+    experiment_name: diffusion_lid_synthetic_small
+    sample.num: 0 # cancel final sampling (Important!)

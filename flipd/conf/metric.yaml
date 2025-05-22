@@ -1,0 +1,38 @@
+experiment_name: Datapoint-level Metrics
+out_dir: ./outputs
+tags: {}
+dev_run: false
+
+
+defaults:
+  - metric: lid_conditional
+  - metric_dataset: laion_aesthetics2k
+  - dgm/architecture: diffusion_stable
+  - dgm/encoder: stable_vqvae
+  - dgm/decoder: stable_vqvae
+  - dgm/condition_encoder: stable_prompt
+  - _self_
+
+all_data_transforms:
+  t0:
+    _target_: torchvision.transforms.Resize
+    size: [512, 512]
+  t1:
+    _target_: torchvision.transforms.ToTensor
+  t2:
+    _target_: data.transforms.DiscardAlphaChannel
+  t3:
+    _target_: torchvision.transforms.Normalize
+    mean: [0.5, 0.5, 0.5]
+    std: [0.5, 0.5, 0.5]
+_all_data_transforms: ${oc.dict.values:all_data_transforms}
+
+
+device:
+  _target_: torch.device
+  device: cuda
+
+
+dataloader:
+  batch_size: 8
+  num_workers: 40

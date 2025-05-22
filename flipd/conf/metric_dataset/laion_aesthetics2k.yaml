@@ -1,0 +1,12 @@
+_target_: data.datasets.EncodedTextImageDataset
+image_encoder: ${dgm.encoder}
+prompt_encoder: ${dgm.condition_encoder}
+raw_dataset:
+  _target_: data.datasets.LAIONAesthetics
+  transform:
+    _target_: torchvision.transforms.Compose
+    transforms: ${_all_data_transforms}
+  subset_size: 2000
+encodings_path: outputs/laion_aesthetics_2k_encoded.pt
+device: ${device}
+

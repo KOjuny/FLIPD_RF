@@ -1,0 +1,105 @@
+metric:
+  _target_: metrics.mem.detectors.ConditionalLID
+  sde:
+    _target_: models.diffusions.stable.StableDiffusionSde
+  lid_estimator_partial:
+    _target_: lid.diffusions.FlipdEstimator
+    _partial_: true
+    device:
+      _target_: torch.device
+      device: cuda
+  t: 0.01
+  hutchinson_sample_count: 1
+metric_dataset:
+  _target_: data.datasets.EncodedTextImageDataset
+  image_encoder:
+    _target_: models.diffusions.stable.StableDiffusionEncoder
+  prompt_encoder:
+    _target_: models.diffusions.stable.StableDiffusionPromptEncoder
+  raw_dataset:
+    _target_: data.datasets.LAIONAesthetics
+    transform:
+      _target_: torchvision.transforms.Compose
+      transforms:
+      - _target_: torchvision.transforms.Resize
+        size:
+        - 512
+        - 512
+      - _target_: torchvision.transforms.ToTensor
+      - _target_: data.transforms.DiscardAlphaChannel
+      - _target_: torchvision.transforms.Normalize
+        mean:
+        - 0.5
+        - 0.5
+        - 0.5
+        std:
+        - 0.5
+        - 0.5
+        - 0.5
+    subset_size: 128
+  encodings_path: outputs/laion_aesthetics_2k_encoded.pt
+  device:
+    _target_: torch.device
+    device: cuda
+dgm:
+  architecture:
+    _target_: models.diffusions.stable.StableDiffusionSde
+  encoder:
+    _target_: models.diffusions.stable.StableDiffusionEncoder
+  decoder:
+    _target_: models.diffusions.stable.StableDiffusionDecoder
+  condition_encoder:
+    _target_: models.diffusions.stable.StableDiffusionPromptEncoder
+experiment_name: Datapoint-level Metrics
+out_dir: ./outputs
+tags: {}
+dev_run: false
+all_data_transforms:
+  t0:
+    _target_: torchvision.transforms.Resize
+    size:
+    - 512
+    - 512
+  t1:
+    _target_: torchvision.transforms.ToTensor
+  t2:
+    _target_: data.transforms.DiscardAlphaChannel
+  t3:
+    _target_: torchvision.transforms.Normalize
+    mean:
+    - 0.5
+    - 0.5
+    - 0.5
+    std:
+    - 0.5
+    - 0.5
+    - 0.5
+_all_data_transforms:
+- _target_: torchvision.transforms.Resize
+  size:
+  - 512
+  - 512
+- _target_: torchvision.transforms.ToTensor
+- _target_: data.transforms.DiscardAlphaChannel
+- _target_: torchvision.transforms.Normalize
+  mean:
+  - 0.5
+  - 0.5
+  - 0.5
+  std:
+  - 0.5
+  - 0.5
+  - 0.5
+device:
+  _target_: torch.device
+  device: cuda
+dataloader:
+  batch_size: 8
+  num_workers: 40
+mflow:
+  experiment_name: hydra_test
+mlflow:
+  tags:
+    test_script: datapoint_metrics
+    setting: dev_lid_conditional_laion_aesthetics2k
+  experiment_name: hydra_tests

@@ -1,0 +1,10 @@
+defaults:
+- hydra: default
+- sim_metric: calibrated_l2
+
+metric_name: ${hydra:runtime.choices.sim_metric}
+
+model_dir: /data/diffusion-mem/model-zoo/cifar10/subset08k/channels-128
+out_dir: ${model_dir}/memorization
+queryset_path: ${model_dir}/artifacts/samples
+refset_path: /data/diffusion-mem/datasets/cifar10

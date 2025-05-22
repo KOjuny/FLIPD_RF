@@ -1,0 +1,70 @@
+# monitoring the likelihood of different datapoints evaluated for a generative model
+_target_: models.monitoring.MonitorMultiMetrics
+device:
+  _target_: torch.device
+  type: cuda
+dataset: ${dataset.training_torch_data}
+
+# the callback default settings
+frequency: 1
+subsample_size: 4096
+verbose: True
+save_image: ${dataset.is_image}
+batch_size: 128
+
+metric_names:
+  - likelihood
+  - FLIPD1
+  - FLIPD2
+  - FLIPD3
+datapoint_metrics_partial:
+  - _target_: metrics.likelihoods.LikelihoodMetric
+    _partial_: True
+    t: 0.0001
+    t_end: 1.0
+    steps: 10
+    verbose: True
+    laplacian_kwargs:
+      _target_: omegaconf.OmegaConf.to_container
+      cfg:
+        method: hutchinson_gaussian
+        hutchinson_sample_count: 5
+        chunk_size: 128
+        seed: 42
+        verbose: True
+  - _target_: metrics.lids.LIDMetric
+    _partial_: True
+    lid_estimator_partial:
+      _target_: lid.diffusions.FlipdEstimator
+      _partial_: True
+    # arguments
+    t: 0.01
+    method: hutchinson_gaussian
+    hutchinson_sample_count: 128
+    chunk_size: 128
+    seed: 42
+    verbose: 1
+  - _target_: metrics.lids.LIDMetric
+    _partial_: True
+    lid_estimator_partial:
+      _target_: lid.diffusions.FlipdEstimator
+      _partial_: True
+    # arguments
+    t: 0.1
+    method: hutchinson_gaussian
+    hutchinson_sample_count: 128
+    chunk_size: 128
+    seed: 42
+    verbose: 1
+  - _target_: metrics.lids.LIDMetric
+    _partial_: True
+    lid_estimator_partial:
+      _target_: lid.diffusions.FlipdEstimator
+      _partial_: True
+    # arguments
+    t: 0.2
+    method: hutchinson_gaussian
+    hutchinson_sample_count: 128
+    chunk_size: 128
+    seed: 42
+    verbose: 1

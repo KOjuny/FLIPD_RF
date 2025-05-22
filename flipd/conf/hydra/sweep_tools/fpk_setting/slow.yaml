@@ -1,0 +1,11 @@
+# @package _global_
+defaults:
+  - /callbacks@all_callbacks.flipd: flipd
+  - _self_
+
+all_callbacks:
+  flipd: 
+    lid_estimation_args:
+      verbose: 1
+      method: deterministic
+      chunk_size: 512

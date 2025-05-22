@@ -1,0 +1,22 @@
+# Sweep from section 3.1 of Yoon et al. (2023, https://openreview.net/pdf?id=shciCbSk9h)
+run:
+  dir: ${out_dir}/hydra/${now:%Y-%m-%d}/${now:%H\:%M\:%S}
+sweep:
+  dir: ${out_dir}/hydra/${now:%Y-%m-%d}/${now:%H\:%M\:%S}-sweep
+mode: MULTIRUN
+
+sweeper:
+  params:
+    dataset: cifar10
+    +experiment: train_diffusion_rgb
+    +dataset.val.split_size: 0
+    +dataset.train.subset_size: 500,1000,2000,4000,8000,16000,32000
+    dgm.architecture.score_net.block_out_channels: "[64,128,128,128],[128,256,256,256],[256,512,512,512]"
+    train.trainer.max_epochs: -1
+    +train.trainer.max_steps: 500000
+    ++all_callbacks.sample_grid.sample_kwargs.timesteps: 100
+    ++all_callbacks.sample_grid.sample_kwargs.stochastic: false
+    ++all_callbacks.sample_grid.sample_every_n_epoch: 0
+    ++all_callbacks.sample_grid.sample_every_n_step: 250
+    ++all_callbacks.checkpoint.save_last: false
+    ++all_callbacks.checkpoint.monitor: train/loss

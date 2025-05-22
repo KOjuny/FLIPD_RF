@@ -1,0 +1,33 @@
+run:
+  dir: ${out_dir}/hydra/${now:%Y-%m-%d}/${now:%H\:%M\:%S}
+sweep:
+  dir: ${out_dir}/hydra/${now:%Y-%m-%d}/${now:%H\:%M\:%S}-sweep
+mode: MULTIRUN
+
+sweeper:
+  params:
+    # pick a checkpoint and a model
+    +hydra/sweep_tools/image_checkpoint: "cifar10,svhn,fmnist,mnist"
+    # pick a estimator setting
+    +hydra/sweep_tools/fpk_setting: "rapid,fast,slow"
+    
+    experiment_name: image_complexity
+    # set to one to plot the grid
+    all_callbacks.sample_grid.sample_every_n_epoch: 1
+
+    # set learning rate to small and limit the number of batches so that no training happens!
+    lightning_dgm.optim_partial.lr: 1e-10
+    # should set to one otherwise there's nothing to monitor!  
+    +train.trainer.limit_train_batches: 1 
+    +train.trainer.limit_val_batches: 1 
+
+    # set to one to show the curve right after the first epoch
+    all_callbacks.flipd.frequency: 1
+
+    # set the range of the LID curve to a larger value
+    all_callbacks.flipd.sweeping_range.num: 100
+
+    # set to 128 to avoid having tons of samples
+    all_callbacks.flipd.subsample_size: 128
+
+    sample.num: 0 # cancel final sampling (Important!)

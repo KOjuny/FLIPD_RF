@@ -1,0 +1,7 @@
+_target_: mem.metrics.DinoV2SimMetric
+arch: dinov2_vits14
+batch_size: 50
+num_workers: 8
+dist_threshold: 0.7   # threshold to extract memorized samples
+is_ascend: False
+index_type: inner_product

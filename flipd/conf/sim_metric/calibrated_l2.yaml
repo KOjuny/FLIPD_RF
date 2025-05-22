@@ -1,0 +1,7 @@
+_target_: metrics.mem.metrics.L2SimMetric
+is_calibrated: True
+s_nn: 1               # size of nearest neighbour set, set to be >= 1 if use calibrated l2 distance
+dist_threshold: 0.8   # threshold to extract memorized samples
+batch_size: 50
+is_ascend: True
+index_type: euclidean

@@ -1,0 +1,13 @@
+_target_: data.datasets.EncodedTextImageDataset
+image_encoder: ${dgm.encoder}
+prompt_encoder: ${dgm.condition_encoder}
+raw_dataset:
+  _target_: data.datasets.LAIONMemorized
+  transform:
+    _target_: torchvision.transforms.Compose
+    transforms: ${_all_data_transforms}
+  mem_type: MV
+  return_on_timeout: skip
+encodings_path: outputs/laion_memorized_encoded.pt
+device: ${device}
+

@@ -1,0 +1,34 @@
+run:
+  dir: ${out_dir}/hydra/${now:%Y-%m-%d}/${now:%H\:%M\:%S}
+sweep:
+  dir: ${out_dir}/hydra/${now:%Y-%m-%d}/${now:%H\:%M\:%S}-sweep
+mode: MULTIRUN
+
+sweeper:
+  params:
+    # sweep over all the different medium synthetic data types
+    dataset: "manifolds/medium/affine_100D_10d_25d_50d_gaussian,manifolds/medium/affine_100D_10d_25d_50d_uniform,manifolds/medium/affine_100D_10d_30d_90d_uniform,manifolds/medium/affine_100D_10d_uniform,manifolds/medium/affine_100D_30d_gaussian,manifolds/medium/affine_100D_30d_uniform,manifolds/medium/affine_100D_90d_gaussian,manifolds/medium/affine_100D_90d_uniform,manifolds/medium/squiggly_05_freq_100D_10d_25d_50d_uniform,manifolds/medium/squiggly_05_freq_100D_50d_uniform,manifolds/medium/squiggly_10_freq_100D_10d_25d_50d_uniform,manifolds/medium/squiggly_10_freq_100D_50d_uniform,manifolds/medium/squiggly_1_freq_100D_10d_25d_50d_uniform,manifolds/medium/squiggly_1_freq_100D_50d_uniform,manifolds/medium/squiggly_5_freq_100D_10d_25d_50d_uniform,manifolds/medium/squiggly_5_freq_100D_50d_uniform"
+
+    # increase the batch size to make LIDL faster!
+    train.loader.batch_size: 1024
+    train.val_loader.batch_size: 1024
+
+    +experiment: train_lidl_tabular 
+    # plot everything after every single epoch
+    all_callbacks.lidl.frequency: 1 
+    # set the experiment name to something meaningful on mlflow
+    experiment_name: lidl_medium
+    # set the max epochs to 50 to be fair compared to our method
+    train.trainer.max_epochs: 50
+
+    # uncomment for testing:
+    # train.trainer.fast_dev_run: true 
+
+    # Customize progress bar to avoid having a huge log in stderr of mlflow
+    +callbacks@all_callbacks.progress_bar: trainer_progress_bar
+    all_callbacks.progress_bar.refresh_rate: 100
+
+    # Set to 4096 data representatives to analyze metrics
+    all_callbacks.lidl.subsample_size: 4096
+
+    sample.num: 0 # cancel final sampling (Important!)

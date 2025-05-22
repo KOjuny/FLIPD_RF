@@ -1,0 +1,4 @@
+_target_: metrics.mem.detectors.ReconstructionCost
+sde: ${dgm.architecture}
+recon_time: 0.5
+steps: 10

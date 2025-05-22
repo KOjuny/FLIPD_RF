@@ -1,0 +1,30 @@
+_target_: lid.callbacks.monitor_lid_curve.MonitorLIDCurve
+device: # the device that FPK estimator uses for JVP computation
+  _target_: torch.device
+  type: cuda
+dataset: ${dataset.training_torch_data}
+# The sweeping arguments
+sweeping_arg: delta
+sweeping_range:
+  _target_: numpy.linspace
+  start: 0.001
+  stop: 10.
+  num: 50
+# the model directory
+use_artifact: false
+lid_estimator_partial:
+  _target_: lid.diffusions.FPKRegressionEstimator
+  _partial_: true
+  ambient_dim: ${dataset.data_dim}
+
+frequency: 1
+subsample_size: 4096
+verbose: True
+save_image: ${dataset.is_image}
+batch_size: 128
+
+lid_estimation_args:
+  verbose: 0
+  chunk_size: 512
+  seed: 42
+  method: deterministic

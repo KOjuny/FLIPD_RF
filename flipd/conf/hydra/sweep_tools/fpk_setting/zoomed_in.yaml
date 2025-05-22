@@ -1,0 +1,10 @@
+# @package _global_
+defaults:
+  - /callbacks@all_callbacks.flipd: flipd
+  - _self_
+
+all_callbacks:
+  flipd: 
+    sweeping_range:
+      num: 50
+      stop: 1.0

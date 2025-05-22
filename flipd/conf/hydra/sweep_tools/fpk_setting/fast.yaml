@@ -1,0 +1,12 @@
+# @package _global_
+defaults:
+  - /callbacks@all_callbacks.flipd: flipd
+  - _self_
+
+all_callbacks:
+  flipd: 
+    lid_estimation_args:
+      verbose: 1
+      method: hutchinson_gaussian
+      hutchinson_sample_count: 50
+      chunk_size: 512
