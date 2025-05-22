@@ -4,7 +4,7 @@ mlflow
 python-dotenv
 gdown 
 datasets
-git+https://github.com/HamidrezaKmK/nflows.git 
+nflows
 httpx
 dagshub
 diffusers
